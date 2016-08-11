@@ -1,0 +1,19 @@
+#!/bin/bash
+
+if [[ "$#" == "0" ]]; then
+  echo "usage: $0 <product_tag>"
+  exit 1
+fi
+
+product_tag="$1"
+
+instances_json=$(aws ec2 describe-instances \
+  --filters "Name=tag:Product,Values=*${product_tag}*")
+
+jq -r '.Reservations[] | .Instances[] |
+    {
+      ip: .PrivateIpAddress,
+      name: .Tags | map(select(.Key == "Name"))[] | .Value,
+      env: .Tags | map(select(.Key == "Environment"))[] | .Value
+    } |
+    join(" ")' < <(echo "${instances_json}")
