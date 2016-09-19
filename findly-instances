@@ -1,14 +1,27 @@
 #!/bin/bash
 
+tag_name="Product"
+
+case $1 in
+  --name)
+    tag_name="Name"
+    shift
+  ;;
+  --product)
+    tag_name="Product"
+    shift
+  ;;
+esac
+
 if [[ "$#" == "0" ]]; then
-  echo "usage: $0 <product_tag>"
+  echo "usage: $0 [ --name | --product ] <tag_value>"
   exit 1
 fi
 
-product_tag="$1"
+tag_value="$1"
 
 instances_json=$(aws ec2 describe-instances \
-  --filters "Name=tag:Product,Values=*${product_tag}*")
+  --filters "Name=tag:${tag_name},Values=*${tag_value}*")
 
 jq -r '.Reservations[] | .Instances[] |
     {

@@ -1,16 +1,24 @@
 Findly Instances
 ================
 
-CLI tool to find AWS EC2 instances by product tag.
+CLI tool to find AWS EC2 instances by Name or Product tag.
 
 
 Usage
 -----
 
-    ./findly-instances <product_tag>
+    ./findly-instances [ --name | --product ] <tag_value>
 
-Product tag can be a partial match. Requires AWS CLI and JQ. AWS default
-profile or environment variables will be used.
+The "--name" and "--product" args indicate whether "Name" or "Product" EC2 tags
+should be searched. The default is to search "Product" tags. The tag value can
+be a partial match.
+
+
+Dependencies
+------------
+
+Requires AWS CLI and JQ. AWS default profile or environment variables will be
+used.
 
 
 Example
