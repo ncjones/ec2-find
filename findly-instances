@@ -26,7 +26,7 @@ instances_json=$(aws ec2 describe-instances \
 jq -r '.Reservations[] | .Instances[] |
     {
       ip: .PrivateIpAddress,
-      name: .Tags | map(select(.Key == "Name"))[] | .Value,
-      env: .Tags | map(select(.Key == "Environment"))[] | .Value
+      name: ((.Tags[] | select(.Key == "Name")) // {}) | .Value,
+      env: ((.Tags[] | select(.Key == "Environment")) // {}) | .Value
     } |
     join(" ")' < <(echo "${instances_json}")
