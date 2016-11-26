@@ -13,6 +13,22 @@ AWS CLI and JQ are required. AWS CLI default profile or environment
 variables can be used to set AWS credentials."
 }
 
+function red() {
+  which tput > /dev/null && tput setaf 1
+}
+
+function green() {
+  which tput > /dev/null && tput setaf 2
+}
+
+function bold() {
+  which tput > /dev/null && tput bold
+}
+
+function reset() {
+  which tput > /dev/null && tput sgr0
+}
+
 function describe_instances_cmd() {
   printf "%s" "aws ec2 describe-instances --filters "
   for ((i=1; i<=tag_count; i++)); do
@@ -35,12 +51,25 @@ function normalize_json() {
     ) | sort_by(.name)[]'
 }
 
+state_color() {
+  case "$1" in
+    running)
+      echo -n "$(green)"
+    ;;
+    stopped)
+      echo -n "$(red)"
+    ;;
+  esac
+}
+
 format_string="%-7s %-11s %-15s %s\n"
 
 function format_line() {
+  local state
+  state="$(echo "$1" | jq -r .state)"
   # shellcheck disable=SC2059
-  printf "${format_string}" \
-    "$(echo "$1" | jq -r .state)" \
+  printf "$(state_color "$state")${format_string}$(reset)" \
+    "${state}" \
     "$(echo "$1" | jq -r .id)" \
     "$(echo "$1" | jq -r .ip)" \
     "$(echo "$1" | jq -r .name)"
@@ -48,7 +77,7 @@ function format_line() {
 
 function format_output() {
   # shellcheck disable=SC2059
-  printf "${format_string}" "State" "Id" "Private IP" "Name"
+  printf "$(bold)${format_string}$(reset)" "State" "Id" "Private IP" "Name"
   while read line; do
     format_line "$line"
   done
