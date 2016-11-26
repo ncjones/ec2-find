@@ -2,24 +2,26 @@
 
 function show_help() {
   echo "\
-Usage: $(cmd) [--TAG_NAME] [TAG_VALUE]
+Usage: $(basename "$0") (--TAG_NAME [TAG_VALUE])*
 
 Find EC2 instances by tag values and show concise, human-readable output.
-Instances are matched if they contain the given tag value. If no tag name is
-specified then 'Name' tag is used. If no tag value is specified then '*' is
-used.
+Instances are matched if they contain all the given tags and values. Tag values
+can be a partial match. If no tag name is specified then 'Name' tag is used. If
+no value is specified for a tag then any value will be matched.
 
 AWS CLI and JQ are required. AWS CLI default profile or environment
 variables can be used to set AWS credentials."
 }
 
-function cmd() {
-  basename "$0"
+function describe_instances_cmd() {
+  printf "%s" "aws ec2 describe-instances --filters "
+  for ((i=1; i<=tag_count; i++)); do
+    printf '"Name=tag:%s,Values=*%s*" ' "${tag_names[i]}" "${tag_values[i]}"
+  done
 }
 
 function get_instances() {
-  aws ec2 describe-instances \
-    --filters "Name=tag:${tag_name},Values=*${tag_value}*"
+  eval "$(describe_instances_cmd)"
 }
 
 function normalize_json() {
@@ -52,20 +54,31 @@ function format_output() {
   done
 }
 
-case $1 in
-  -h|--help)
-    show_help
-    exit
-  ;;
-  --*)
-    tag_name="${1#--}"
-    shift
-  ;;
-  *)
-    tag_name="Name"
-  ;;
-esac
+tag_names=()
+tag_values=()
+tag_count=0
 
-tag_value="${1:-*}"
+while [[ $# -gt 0 ]]; do
+  case $1 in
+    -h|--help)
+      show_help
+      exit
+    ;;
+    --*)
+      tag_count=$((tag_count + 1))
+      tag_names[$tag_count]="${1#--}"
+    ;;
+    *)
+      tag_values[$tag_count]="$1"
+    ;;
+  esac
+  shift
+done
+
+if [[ "$tag_count" == "0" ]]; then
+  tag_count=1
+  tag_names[1]="Name"
+  tag_values[1]="${tag_values[0]}"
+fi
 
 get_instances | normalize_json | format_output

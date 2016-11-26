@@ -10,13 +10,13 @@ Usage
 -----
 
 ```
-ec2-find --<tag_name> <tag_value>
+ec2-find ( --<tag_name> <tag_value> )*
 ```
 
-Instances having the specified tag will be matched. The tag value can be a
-partial substring match. If no tag name is specified then the 'Name' tag is
-assumed. If no tag value is specified then an asterisk ("\*") is used and will
-match all values for the tag.
+Instances having the specified tags will be matched. The tag values can be
+partial substring matches. If no tag names are specified then the 'Name' tag is
+assumed. If no value is specified for a tag then any value for the tag will be
+matched.
 
 
 Dependencies
@@ -29,6 +29,10 @@ used.
 Examples
 -------
 
+Find all instances (warning, may be very slow):
+
+    $  ec2-find
+
 Find instances with a "Name" tag containing "nginx":
 
     $  ec2-find nginx
@@ -37,9 +41,14 @@ Find instances with a "Role" tag containing "gateway":
 
     $  ec2-find --Role gateway
 
-Find all instances having a "LaunchedBy" tag:
+Find all instances with an "aws:cloudformation:stack-id" tag of any value:
 
-    $  ec2-find --LaunchedBy
+    $  ec2-find --aws:cloudformation:stack-id
+
+Find instances with a "Role" tag containing "gateway" and "Env" tag containing
+"prod":
+
+    $  ec2-find --Role gateway --Env prod
 
 
 Output Format
