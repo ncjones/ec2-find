@@ -13,20 +13,24 @@ AWS CLI and JQ are required. AWS CLI default profile or environment
 variables can be used to set AWS credentials."
 }
 
+color_enabled() {
+  [[ "$use_color" == "yes" ]] && which tput > /dev/null
+}
+
 function red() {
-  which tput > /dev/null && tput setaf 1
+  color_enabled && tput setaf 1
 }
 
 function green() {
-  which tput > /dev/null && tput setaf 2
+  color_enabled && tput setaf 2
 }
 
 function bold() {
-  which tput > /dev/null && tput bold
+  color_enabled && tput bold
 }
 
 function reset() {
-  which tput > /dev/null && tput sgr0
+  color_enabled && tput sgr0
 }
 
 function describe_instances_cmd() {
@@ -86,12 +90,16 @@ function format_output() {
 tag_names=()
 tag_values=()
 tag_count=0
+use_color="yes"
 
 while [[ $# -gt 0 ]]; do
   case $1 in
     -h|--help)
       show_help
       exit
+    ;;
+    --no-color)
+      use_color="no"
     ;;
     --*)
       tag_count=$((tag_count + 1))
