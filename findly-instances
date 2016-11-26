@@ -47,6 +47,7 @@ instances_json=$(aws ec2 describe-instances \
 
 jq -r '.Reservations[] | .Instances[] |
     {
+      id: .InstanceId,
       ip: .PrivateIpAddress,
       name: ((.Tags[] | select(.Key == "Name")) // {}) | .Value,
       env: ((.Tags[] | select(.Key == "Environment")) // {}) | .Value
