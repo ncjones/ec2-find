@@ -52,13 +52,13 @@ function format_output() {
 }
 
 case $1 in
+  -h|--help)
+    show_help
+    exit
+  ;;
   --*)
     tag_name="${1#--}"
     shift
-  ;;
-  -h)
-    show_help
-    exit
   ;;
   *)
     tag_name="Name"
