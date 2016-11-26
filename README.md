@@ -1,5 +1,5 @@
-Findly Instances
-================
+EC2 Find
+========
 
 Bash script to find AWS EC2 instances by tag values and show concise output
 that is both human-readable and scripting-friendly. The command syntax is
@@ -10,7 +10,7 @@ Usage
 -----
 
 ```
-findly-instances --<tag_name> <tag_value>
+ec2-find --<tag_name> <tag_value>
 ```
 
 Instances having the specified tag will be matched. The tag value can be a
@@ -31,15 +31,15 @@ Examples
 
 Find instances with a "Name" tag containing "nginx":
 
-    $  findly-instances nginx
+    $  ec2-find nginx
 
 Find instances with a "Role" tag containing "gateway":
 
-    $  findly-instances --Role gateway
+    $  ec2-find --Role gateway
 
 Find all instances having a "LaunchedBy" tag:
 
-    $  findly-instances --LaunchedBy
+    $  ec2-find --LaunchedBy
 
 
 Output Format
