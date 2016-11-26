@@ -1,17 +1,22 @@
 Findly Instances
 ================
 
-CLI tool to find AWS EC2 instances by Name or Product tag.
+Bash script to find AWS EC2 instances by tag values and show concise output
+that is both human-readable and scripting-friendly. The command syntax is
+greatly simplified compared to using `aws ec2 describe-instances` filters.
 
 
 Usage
 -----
 
-    ./findly-instances [ --name | --product ] <tag_value>
+```
+findly-instances --<tag_name> <tag_value>
+```
 
-The "--name" and "--product" args indicate whether "Name" or "Product" EC2 tags
-should be searched. The default is to search "Product" tags. The tag value can
-be a partial match.
+Instances having the specified tag will be matched. The tag value can be a
+partial substring match. If no tag name is specified then the 'Name' tag is
+assumed. If no tag value is specified then an asterisk ("\*") is used and will
+match all values for the tag.
 
 
 Dependencies
@@ -21,22 +26,31 @@ Requires AWS CLI and JQ. AWS default profile or environment variables will be
 used.
 
 
-Example
+Examples
 -------
 
-    ./findly-instances waggle
-    10.55.71.178 qa4-be-combinedservices qa4
-    10.55.67.46 qa1-be-combinedservices qa1
-    10.55.64.179 qa1-combinedwebsites qa1
-    10.55.71.27 qa2-be-combinedservices qa2
-    10.55.35.112 dev-be-combinedservices development
-    10.55.65.5 uat-waggle uat
-    10.55.65.131 qa4-combinedwebsites qa4
-    ...
+Find instances with a "Name" tag containing "nginx":
+
+    $  findly-instances nginx
+
+Find instances with a "Role" tag containing "gateway":
+
+    $  findly-instances --Role gateway
+
+Find all instances having a "LaunchedBy" tag:
+
+    $  findly-instances --LaunchedBy
 
 
 Output Format
 -------------
 
-Output shows private IP address, "Name" tag and "Environment" tag for each
-matched EC2 instance.
+Output shows basic instance metadata:
+
+```
+State   Id          Private IP      Name
+running i-00082ec3  10.55.100.61    prod-gateway-01
+running i-e5caf72d  10.55.100.62    prod-gateway-02
+running i-ce05170d  10.55.96.56     test-gateway-01
+running i-ecb92da9  10.55.96.57     test-gateway-02
+```

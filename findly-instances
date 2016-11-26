@@ -17,7 +17,39 @@ function cmd() {
   basename "$0"
 }
 
-tag_name="Product"
+function get_instances() {
+  aws ec2 describe-instances \
+    --filters "Name=tag:${tag_name},Values=*${tag_value}*"
+}
+
+function normalize_json() {
+  jq -c '.Reservations[] | .Instances[] |
+    {
+      id: .InstanceId,
+      ip: .PrivateIpAddress,
+      name: ((.Tags[] | select(.Key == "Name")) // {}) | .Value,
+      state: .State.Name
+    }'
+}
+
+format_string="%-7s %-11s %-15s %s\n"
+
+function format_line() {
+  # shellcheck disable=SC2059
+  printf "${format_string}" \
+    "$(echo "$1" | jq -r .state)" \
+    "$(echo "$1" | jq -r .id)" \
+    "$(echo "$1" | jq -r .ip)" \
+    "$(echo "$1" | jq -r .name)"
+}
+
+function format_output() {
+  # shellcheck disable=SC2059
+  printf "${format_string}" "State" "Id" "Private IP" "Name"
+  while read line; do
+    format_line "$line"
+  done
+}
 
 case $1 in
   --*)
@@ -33,23 +65,6 @@ case $1 in
   ;;
 esac
 
-tag_value="${1}"
+tag_value="${1:-*}"
 
-if [[ "$tag_value" == "" ]]; then
-  show_help
-  exit 1
-fi
-
-tag_value="$1"
-
-instances_json=$(aws ec2 describe-instances \
-  --filters "Name=tag:${tag_name},Values=*${tag_value}*")
-
-jq -r '.Reservations[] | .Instances[] |
-    {
-      id: .InstanceId,
-      ip: .PrivateIpAddress,
-      name: ((.Tags[] | select(.Key == "Name")) // {}) | .Value,
-      env: ((.Tags[] | select(.Key == "Environment")) // {}) | .Value
-    } |
-    join(" ")' < <(echo "${instances_json}")
+get_instances | normalize_json | format_output
