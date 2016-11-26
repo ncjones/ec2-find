@@ -23,13 +23,14 @@ function get_instances() {
 }
 
 function normalize_json() {
-  jq -c '.Reservations[] | .Instances[] |
-    {
-      id: .InstanceId,
-      ip: .PrivateIpAddress,
-      name: ((.Tags[] | select(.Key == "Name")) // {}) | .Value,
-      state: .State.Name
-    }'
+  jq -c '[.Reservations[] | .Instances[]] | map(
+      {
+        id: .InstanceId,
+        ip: .PrivateIpAddress,
+        name: ((.Tags[] | select(.Key == "Name")) // {}) | .Value,
+        state: .State.Name
+      }
+    ) | sort_by(.name)[]'
 }
 
 format_string="%-7s %-11s %-15s %s\n"
