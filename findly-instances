@@ -1,20 +1,42 @@
 #!/bin/bash
 
+function show_help() {
+  echo "\
+Usage: $(cmd) INSTANCE_NAME
+       $(cmd) --TAG_NAME TAG_VALUE
+
+Find EC2 instances by tag values and show private ip address. Instances are
+matched if they contain the given tag value. If no tag name is specified then
+'Name' tag is used.
+
+AWS CLI and JQ are required. Set default AWS CLI profile or environment
+variables to control AWS credentials."
+}
+
+function cmd() {
+  basename "$0"
+}
+
 tag_name="Product"
 
 case $1 in
-  --name)
-    tag_name="Name"
+  --*)
+    tag_name="${1#--}"
     shift
   ;;
-  --product)
-    tag_name="Product"
-    shift
+  -h)
+    show_help
+    exit
+  ;;
+  *)
+    tag_name="Name"
   ;;
 esac
 
-if [[ "$#" == "0" ]]; then
-  echo "usage: $0 [ --name | --product ] <tag_value>"
+tag_value="${1}"
+
+if [[ "$tag_value" == "" ]]; then
+  show_help
   exit 1
 fi
 
