@@ -2,15 +2,15 @@
 
 function show_help() {
   echo "\
-Usage: $(cmd) INSTANCE_NAME
-       $(cmd) --TAG_NAME TAG_VALUE
+Usage: $(cmd) [--TAG_NAME] [TAG_VALUE]
 
-Find EC2 instances by tag values and show private ip address. Instances are
-matched if they contain the given tag value. If no tag name is specified then
-'Name' tag is used.
+Find EC2 instances by tag values and show concise, human-readable output.
+Instances are matched if they contain the given tag value. If no tag name is
+specified then 'Name' tag is used. If no tag value is specified then '*' is
+used.
 
-AWS CLI and JQ are required. Set default AWS CLI profile or environment
-variables to control AWS credentials."
+AWS CLI and JQ are required. AWS CLI default profile or environment
+variables can be used to set AWS credentials."
 }
 
 function cmd() {
