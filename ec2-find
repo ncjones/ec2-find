@@ -2,7 +2,7 @@
 
 function show_help() {
   echo "\
-Usage: $(basename "$0") (--TAG_NAME [TAG_VALUE])*
+Usage: $(basename "$0") [OPTIONS] ([--TAG_NAME] [TAG_VALUE])*
 
 Find EC2 instances by tag values and show concise, human-readable output.
 Instances are matched if they contain all the given tags and values. Tag values
@@ -10,7 +10,14 @@ can be a partial match. If no tag name is specified then 'Name' tag is used. If
 no value is specified for a tag then any value will be matched.
 
 AWS CLI and JQ are required. AWS CLI default profile or environment
-variables can be used to set AWS credentials."
+variables can be used to set AWS credentials.
+
+Options:
+
+  --no-color    Suppress colorized output.
+
+  -h | --help   Show help.
+"
 }
 
 color_enabled() {
