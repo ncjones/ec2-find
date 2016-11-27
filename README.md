@@ -54,12 +54,13 @@ Find instances with a "Role" tag containing "gateway" and "Env" tag containing
 Output Format
 -------------
 
-Output shows basic instance metadata:
+Output shows common basic instance metadata plus any filtered tags. For
+example, the output for `ec2-find --Role gateway` may look like:
 
 ```
-State   Id          Private IP      Name
-running i-00082ec3  10.55.100.61    prod-gateway-01
-running i-e5caf72d  10.55.100.62    prod-gateway-02
-running i-ce05170d  10.55.96.56     test-gateway-01
-running i-ecb92da9  10.55.96.57     test-gateway-02
+State   Id          Private IP      Name              Role
+running i-00082ec3  10.55.100.61    prod-gateway-01   gateway
+running i-e5caf72d  10.55.100.62    prod-gateway-02   gateway
+running i-ce05170d  10.55.96.56     test-gateway-01   gateway
+running i-ecb92da9  10.55.96.57     test-gateway-02   gateway
 ```

@@ -44,15 +44,28 @@ function get_instances() {
   eval "$(describe_instances_cmd)"
 }
 
+function instance_tags_jq_filter() {
+  echo '{'
+  for tag_name in "${tag_names[@]}"; do
+    echo "\"$tag_name\": ((.Tags[] | select(.Key == \"$tag_name\")) // {}) | .Value,"
+  done
+  echo '}'
+}
+
+function instance_jq_filter() {
+  echo "{
+      tags: $(instance_tags_jq_filter),
+      id: .InstanceId,
+      ip: .PrivateIpAddress,
+      name: ((.Tags[] | select(.Key == \"Name\")) // {}) | .Value,
+      state: .State.Name
+    }"
+}
+
 function normalize_json() {
-  jq -c '[.Reservations[] | .Instances[]] | map(
-      {
-        id: .InstanceId,
-        ip: .PrivateIpAddress,
-        name: ((.Tags[] | select(.Key == "Name")) // {}) | .Value,
-        state: .State.Name
-      }
-    ) | sort_by(.name)[]'
+  jq -c "[.Reservations[] | .Instances[]]
+    | map($(instance_jq_filter))
+    | sort_by(.name)[]"
 }
 
 state_color() {
@@ -66,24 +79,44 @@ state_color() {
   esac
 }
 
-format_string="%-7s %-11s %-15s %s\n"
+function format_string() {
+  printf "%s" "%-7s %-11s %-15s %-30s"
+  for tag_name in "${tag_names[@]}"; do
+    [[ "$tag_name" != "Name" ]] && printf "%s" " %-25s"
+  done
+}
 
-function format_line() {
+function print_line() {
   local state
+  local tags=()
   state="$(echo "$1" | jq -r .state)"
+  for tag_name in "${tag_names[@]}"; do
+    [[ "$tag_name" != "Name" ]] && tags+=("$(echo "$1" | jq -r ".tags.\"$tag_name\"")")
+  done
+  printf "%s" "$(state_color "$state")"
   # shellcheck disable=SC2059
-  printf "$(state_color "$state")${format_string}$(reset)" \
+  printf "$(format_string)" \
     "${state}" \
     "$(echo "$1" | jq -r .id)" \
     "$(echo "$1" | jq -r .ip)" \
-    "$(echo "$1" | jq -r .name)"
+    "$(echo "$1" | jq -r .name)" \
+    "${tags[@]}"
+  printf "%s\n" "$(reset)"
 }
 
-function format_output() {
+function print_header_line() {
+  local headers=("State" "Id" "Private IP" "Name")
+  for tag_name in "${tag_names[@]}"; do
+    [[ "$tag_name" != "Name" ]] && headers+=("${tag_name}")
+  done
   # shellcheck disable=SC2059
-  printf "$(bold)${format_string}$(reset)" "State" "Id" "Private IP" "Name"
-  while read line; do
-    format_line "$line"
+  printf "$(bold)$(format_string)$(reset)\n" "${headers[@]}"
+}
+
+function print_output() {
+  print_header_line
+  while read json; do
+    print_line "$json"
   done
 }
 
@@ -118,4 +151,4 @@ if [[ "$tag_count" == "0" ]]; then
   tag_values[1]="${tag_values[0]}"
 fi
 
-get_instances | normalize_json | format_output
+get_instances | normalize_json | print_output
