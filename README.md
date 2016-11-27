@@ -10,7 +10,7 @@ Usage
 -----
 
 ```
-ec2-find ( --<tag_name> <tag_value> )*
+ec2-find ( -<tag_name> <tag_value> )*
 ```
 
 Instances having the specified tags will be matched. The tag values can be
@@ -39,23 +39,23 @@ Find instances with a "Name" tag containing "nginx":
 
 Find instances with a "Role" tag containing "gateway":
 
-    $  ec2-find --Role gateway
+    $  ec2-find -Role gateway
 
 Find all instances with an "aws:cloudformation:stack-name" tag of any value:
 
-    $  ec2-find --aws:cloudformation:stack-name
+    $  ec2-find -aws:cloudformation:stack-name
 
 Find instances with a "Role" tag containing "gateway" and "Env" tag containing
 "prod":
 
-    $  ec2-find --Role gateway --Env prod
+    $  ec2-find -Role gateway -Env prod
 
 
 Output Format
 -------------
 
 Output shows common basic instance metadata plus any filtered tags. For
-example, the output for `ec2-find --Role gateway` may look like:
+example, the output for `ec2-find -Role gateway` may look like:
 
 ```
 State    Type      Id          Private IP      Name              Role
