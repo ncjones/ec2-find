@@ -41,9 +41,9 @@ Find instances with a "Role" tag containing "gateway":
 
     $  ec2-find --Role gateway
 
-Find all instances with an "aws:cloudformation:stack-id" tag of any value:
+Find all instances with an "aws:cloudformation:stack-name" tag of any value:
 
-    $  ec2-find --aws:cloudformation:stack-id
+    $  ec2-find --aws:cloudformation:stack-name
 
 Find instances with a "Role" tag containing "gateway" and "Env" tag containing
 "prod":
