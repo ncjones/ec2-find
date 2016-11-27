@@ -58,6 +58,7 @@ function instance_jq_filter() {
       id: .InstanceId,
       ip: .PrivateIpAddress,
       name: ((.Tags[] | select(.Key == \"Name\")) // {}) | .Value,
+      type: .InstanceType,
       state: .State.Name
     }"
 }
@@ -98,7 +99,7 @@ state_color() {
 }
 
 function get_format_string() {
-  printf "%s" "%-8s %-11s %-15s %-$(tag_width Name)s"
+  printf "%s" "%-8s %-11s %-11s %-15s %-$(tag_width Name)s"
   for ((i=1; i<=tag_count; i++)); do
     [[ "${tag_names[i]}" != "Name" ]] && printf "%s" "  %-${tag_widths[i]}s"
   done
@@ -115,6 +116,7 @@ function print_line() {
   # shellcheck disable=SC2059
   printf "${format_string}" \
     "${state}" \
+    "$(echo "$1" | jq -r .type)" \
     "$(echo "$1" | jq -r .id)" \
     "$(echo "$1" | jq -r .ip)" \
     "$(echo "$1" | jq -r .name)" \
@@ -123,7 +125,7 @@ function print_line() {
 }
 
 function print_header_line() {
-  local headers=("State" "Id" "Private IP" "Name")
+  local headers=("State" "Type" "Id" "Private IP" "Name")
   for tag_name in "${tag_names[@]}"; do
     [[ "$tag_name" != "Name" ]] && headers+=("${tag_name}")
   done
