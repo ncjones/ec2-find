@@ -166,10 +166,10 @@ while [[ $# -gt 0 ]]; do
   shift
 done
 
-if [[ "$tag_count" == "0" ]]; then
-  tag_count=1
-  tag_names[1]="Name"
-  tag_values[1]="${tag_values[0]}"
+if [[ "$tag_count" == "0" || "${tag_values[0]}" != "" ]]; then
+  tag_count=$((tag_count + 1))
+  tag_names[$tag_count]="Name"
+  tag_values[tag_count]="${tag_values[0]}"
 fi
 
 instances_json=$(get_instances)
