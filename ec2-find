@@ -14,15 +14,19 @@ variables can be used to set AWS credentials.
 
 Options:
 
-  --no-color    Suppress colorized output.
+  --state STATE   Filter instance by state name. State name may be a partial
+                  match. EC2 state names are: pending, running, shutting-down,
+                  terminated, stopping, stopped.
 
-  -H            Suppress column headers.
+  --no-color      Suppress colorized output.
+
+  -H              Suppress column headers.
   --no-headers
 
-  -I            Only output instance IP addresses (implies -H).
+  -I              Only output instance IP addresses (implies -H).
   --ip-only
 
-  -h            Show help.
+  -h              Show help.
   --help
 "
 }
@@ -52,6 +56,9 @@ function describe_instances_cmd() {
   for ((i=1; i<=tag_count; i++)); do
     printf '"Name=tag:%s,Values=*%s*" ' "${tag_names[i]}" "${tag_values[i]}"
   done
+  if [[ "$required_state" != "" ]]; then
+    printf '"Name=instance-state-name,Values=*%s*" ' "${required_state}"
+  fi
 }
 
 function get_instances() {
@@ -187,6 +194,10 @@ while [[ $# -gt 0 ]]; do
     ;;
     -H|--no-headers)
       use_headers="no"
+    ;;
+    --state)
+      shift
+      required_state="$1"
     ;;
     -*)
       tag_count=$((tag_count + 1))
