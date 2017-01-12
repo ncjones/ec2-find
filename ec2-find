@@ -16,7 +16,14 @@ Options:
 
   --no-color    Suppress colorized output.
 
-  -h | --help   Show help.
+  -H            Suppress column headers.
+  --no-headers
+
+  -I            Only output instance IP addresses (implies -H).
+  --ip-only
+
+  -h            Show help.
+  --help
 "
 }
 
@@ -113,6 +120,18 @@ function get_format_string() {
 }
 
 function print_line() {
+  if [[ "$ip_only" == "yes" ]]; then
+    print_ip_line "$1"
+  else
+    print_full_line "$1"
+  fi
+}
+
+function print_ip_line() {
+  echo "$1" | jq -r .ip
+}
+
+function print_full_line() {
   local state
   local tags=()
   state="$(echo "$1" | jq -r .state)"
@@ -141,7 +160,7 @@ function print_header_line() {
 }
 
 function print_output() {
-  print_header_line
+  [[ "$use_headers" == "no" ]] || print_header_line
   while read json; do
     print_line "$json"
   done
@@ -161,6 +180,13 @@ while [[ $# -gt 0 ]]; do
     ;;
     --no-color)
       use_color="no"
+    ;;
+    -I|--ip-only)
+      ip_only="yes"
+      use_headers="no"
+    ;;
+    -H|--no-headers)
+      use_headers="no"
     ;;
     -*)
       tag_count=$((tag_count + 1))
