@@ -24,7 +24,8 @@ can be a partial match. If no tag name is specified then 'Name' tag is used. If
 no value is specified for a tag then any value will be matched.
 
 AWS CLI and JQ are required. AWS CLI default profile or environment
-variables can be used to set AWS credentials.
+variables can be used to set AWS credentials. For help with AWS CLI, see
+http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html.
 
 Options:
 

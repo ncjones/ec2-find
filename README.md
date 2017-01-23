@@ -1,9 +1,9 @@
 EC2 Find
 ========
 
-Bash script to find AWS EC2 instances by tag values and show concise output
-that is both human-readable and scripting-friendly. The command syntax is
-greatly simplified compared to using `aws ec2 describe-instances` filters.
+CLI tool to find AWS EC2 instances by tag values and show concise output that
+is both human-readable and scripting-friendly. The command syntax and output is
+greatly simplified compared to using `aws ec2 describe-instances`.
 
 
 Usage
@@ -18,12 +18,16 @@ partial substring matches. If no tag names are specified then the 'Name' tag is
 assumed. If no value is specified for a tag then any value for the tag will be
 matched.
 
+AWS configuration must be provided via the AWS CLI default profile or
+environment variables.
+
+See `ec2-find --help` for more detailed usage instructions.
+
 
 Dependencies
 ------------
 
-Requires AWS CLI and JQ. AWS default profile or environment variables will be
-used.
+Requires Bash, AWS CLI and JQ.
 
 
 License
