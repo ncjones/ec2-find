@@ -26,6 +26,12 @@ Requires AWS CLI and JQ. AWS default profile or environment variables will be
 used.
 
 
+License
+-------
+
+Apache License, Version 2.0
+
+
 Examples
 -------
 
