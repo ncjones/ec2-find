@@ -16,7 +16,7 @@
 
 function show_help() {
   echo "\
-Usage: $(basename "$0") [OPTIONS] ([-TAG_NAME] [TAG_VALUE])*
+Usage: $(basename "$0") ([OPTION] [-TAG_NAME] [TAG_VALUE])*
 
 Find EC2 instances by tag values and show concise, human-readable output.
 Instances are matched if they contain all the given tags and values. Tag values

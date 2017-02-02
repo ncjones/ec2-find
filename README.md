@@ -10,7 +10,7 @@ Usage
 -----
 
 ```
-ec2-find ( -<tag_name> <tag_value> )*
+ec2-find ( [ OPTION ] [ -<tag_name> ] [ <tag_value> ] )*
 ```
 
 Instances having the specified tags will be matched. The tag values can be
@@ -21,7 +21,8 @@ matched.
 AWS configuration must be provided via the AWS CLI default profile or
 environment variables.
 
-See `ec2-find --help` for more detailed usage instructions.
+See `ec2-find --help` for more detailed usage instructions and available
+options.
 
 
 Dependencies
