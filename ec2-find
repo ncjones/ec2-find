@@ -144,6 +144,8 @@ function get_format_string() {
 function print_line() {
   if [[ "$ip_only" == "yes" ]]; then
     print_ip_line "$1"
+  elif [[ "$id_only" == "yes" ]]; then
+    print_id_line "$1"
   else
     print_full_line "$1"
   fi
@@ -151,6 +153,10 @@ function print_line() {
 
 function print_ip_line() {
   echo "$1" | jq -r .ip
+}
+
+function print_id_line() {
+  echo "$1" | jq -r .id
 }
 
 function print_full_line() {
@@ -205,6 +211,10 @@ while [[ $# -gt 0 ]]; do
     ;;
     -I|--ip-only)
       ip_only="yes"
+      use_headers="no"
+    ;;
+    -i|--ids-only)
+      id_only="yes"
       use_headers="no"
     ;;
     -H|--no-headers)
